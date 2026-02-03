@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./useAuth";
 
 /** A form that allows users to register for a new account */
 export default function Register() {
@@ -11,10 +11,10 @@ export default function Register() {
   const [error, setError] = useState(null);
 
   const onRegister = async (formData) => {
-    const username = formData.get("username");
+    const email = formData.get("email");
     const password = formData.get("password");
     try {
-      await register({ username, password });
+      await register({ email, password });
       navigate("/");
     } catch (e) {
       setError(e.message);
@@ -22,21 +22,29 @@ export default function Register() {
   };
 
   return (
-    <>
-      <h1>Register for an account</h1>
-      <form action={onRegister}>
-        <label>
-          Username
-          <input type="text" name="username" />
-        </label>
-        <label>
-          Password
-          <input type="password" name="password" required />
-        </label>
-        <button>Register</button>
-        {error && <output>{error}</output>}
-      </form>
-      <Link to="/login">Already have an account? Log in here.</Link>
-    </>
+    <div className="form-section">
+      <div className="form-container">
+        <h1>Register for an account</h1>
+        <form className="auth-form" action={onRegister}>
+          <div className="form-group">
+            <label>
+              Email
+              <input type="email" name="email" required />
+            </label>
+          </div>
+          <div className="form-group">
+            <label>
+              Password
+              <input type="password" name="password" required />
+            </label>
+          </div>
+          <button className="btn-primary">Register</button>
+          {error && <output>{error}</output>}
+        </form>
+        <div className="form-footer">
+          <Link to="/login">Already have an account? Log in here.</Link>
+        </div>
+      </div>
+    </div>
   );
 }
