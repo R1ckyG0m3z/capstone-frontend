@@ -6,9 +6,10 @@ export default function Layout() {
   return (
     <>
       <Navbar />
-      <main>
-        <Outlet />
-      </main>
+      <Outlet />
+      <footer>
+        <p>&copy; 2026 Trail Kreweser. All rights reserved.</p>
+      </footer>
     </>
   );
 }
