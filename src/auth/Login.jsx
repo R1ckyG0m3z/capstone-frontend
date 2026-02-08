@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./useAuth";
 
 /** A form that allows users to log into an existing account. */
 export default function Login() {
@@ -11,10 +11,10 @@ export default function Login() {
   const [error, setError] = useState(null);
 
   const onLogin = async (formData) => {
-    const username = formData.get("username");
+    const email = formData.get("email");
     const password = formData.get("password");
     try {
-      await login({ username, password });
+      await login({ email, password });
       navigate("/");
     } catch (e) {
       setError(e.message);
@@ -22,21 +22,29 @@ export default function Login() {
   };
 
   return (
-    <>
-      <h1>Log in to your account</h1>
-      <form action={onLogin}>
-        <label>
-          Username
-          <input type="username" name="username" required />
-        </label>
-        <label>
-          Password
-          <input type="password" name="password" required />
-        </label>
-        <button>Login</button>
-        {error && <output>{error}</output>}
-      </form>
-      <Link to="/register">Need an account? Register here.</Link>
-    </>
+    <div className="form-section">
+      <div className="form-container">
+        <h1>Log in to your account</h1>
+        <form className="auth-form" action={onLogin}>
+          <div className="form-group">
+            <label>
+              Email
+              <input type="email" name="email" required />
+            </label>
+          </div>
+          <div className="form-group">
+            <label>
+              Password
+              <input type="password" name="password" required />
+            </label>
+          </div>
+          <button className="btn-primary">Login</button>
+          {error && <output>{error}</output>}
+        </form>
+        <div className="form-footer">
+          <Link to="/register">Need an account? Register here.</Link>
+        </div>
+      </div>
+    </div>
   );
 }
