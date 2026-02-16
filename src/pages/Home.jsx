@@ -38,7 +38,12 @@ export default function Home() {
       (trail) =>
         trail.trip_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         trail.trip_location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        trail.trip_difficulty?.toLowerCase().includes(searchTerm.toLowerCase()),
+        trail.trip_difficulty
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        trail.trip_description
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()),
     );
     setFilteredTrails(filtered);
   };
@@ -108,7 +113,7 @@ export default function Home() {
         <div className="search-bar">
           <input
             type="text"
-            placeholder="Search trails by name, location, or difficulty..."
+            placeholder="Search trails by name, location, difficulty, or description..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSearch()}
