@@ -4,7 +4,7 @@ A modern, responsive React application for discovering and managing off-road 4x4
 
 ## Description
 
-TrailKreweSer Frontend is a single-page application (SPA) that provides off-road enthusiasts with an intuitive platform to explore trails, manage their profiles, plan trips, and connect with the off-road community. Built with React 19 and React Router 7, it offers a seamless user experience with JWT-based authentication and real-time interaction with the backend API.
+TrailKreweSer Frontend is a multi-page application (MPA) that provides off-road enthusiasts with an intuitive platform to explore trails, manage their profiles, plan trips, and connect with the off-road community. Built with React 19 and React Router 7, it offers a seamless user experience with JWT-based authentication and real-time interaction with the backend API.
 
 ## Problem Statement
 
