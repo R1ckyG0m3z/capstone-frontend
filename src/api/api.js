@@ -62,6 +62,16 @@ export const tripsAPI = {
     return response.json();
   },
 
+  geocodeLocation: async (location) => {
+    const query = encodeURIComponent(location);
+    const response = await fetch(`${API}/trips/geocode?location=${query}`);
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error || "Request failed");
+    }
+    return response.json();
+  },
+
   getByUserId: async (userId) => {
     const response = await fetchWithAuth(`${API}/trips/user/${userId}`);
     return response.json();

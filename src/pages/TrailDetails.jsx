@@ -1,20 +1,144 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { tripsAPI, userProfileAPI } from "../api/api";
 import { useAuth } from "../auth/useAuth";
+import mapboxgl from "mapbox-gl";
 
 export default function TrailDetails() {
+  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN?.trim();
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
   const [trail, setTrail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [mapError, setMapError] = useState(null);
+  const [locationError, setLocationError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [mapReady, setMapReady] = useState(false);
+  const [mapContainerReady, setMapContainerReady] = useState(false);
+  const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
+  const markerRef = useRef(null);
+  const mapReadyRef = useRef(false);
 
   useEffect(() => {
     fetchTrailDetails();
   }, [id]);
+
+  useEffect(() => {
+    if (!MAPBOX_TOKEN) {
+      setMapError("Map unavailable. Add VITE_MAPBOX_TOKEN to .env.");
+      return;
+    }
+    if (mapRef.current) return;
+    if (!mapContainerReady || !mapContainerRef.current) return;
+    if (!mapboxgl?.Map) {
+      setMapError("Map unavailable. Please refresh.");
+      return;
+    }
+
+    if (!mapboxgl.supported()) {
+      setMapError("Map requires WebGL support in your browser.");
+      return;
+    }
+
+    try {
+      mapboxgl.accessToken = MAPBOX_TOKEN;
+      mapRef.current = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        style: "mapbox://styles/mapbox/outdoors-v12",
+        center: [-98.5795, 39.8283],
+        zoom: 3,
+      });
+      mapRef.current.addControl(new mapboxgl.NavigationControl(), "top-right");
+      requestAnimationFrame(() => {
+        mapRef.current?.resize();
+      });
+    } catch (err) {
+      setMapError("Map unavailable. Please refresh.");
+      return;
+    }
+
+    mapRef.current.on("error", (event) => {
+      if (event?.error?.message) {
+        setMapError("Map unavailable. Please refresh.");
+      }
+    });
+
+    mapRef.current.on("load", () => {
+      if (!mapRef.current || mapReadyRef.current) return;
+      mapReadyRef.current = true;
+      setMapReady(true);
+    });
+
+    return () => {
+      markerRef.current?.remove();
+      markerRef.current = null;
+      mapRef.current?.remove();
+      mapRef.current = null;
+      mapReadyRef.current = false;
+      setMapReady(false);
+    };
+  }, [MAPBOX_TOKEN, mapContainerReady]);
+
+  useEffect(() => {
+    if (!MAPBOX_TOKEN) return;
+    if (!mapRef.current) return;
+    if (!mapReady) return;
+    if (!trail?.trip_location) return;
+    let cancelled = false;
+
+    const loadMarker = async () => {
+      setLocationError(null);
+      const coords = await geocodeLocation(trail.trip_location);
+      if (!coords || cancelled) {
+        if (!cancelled) {
+          setLocationError("Unable to locate this trail on the map.");
+        }
+        return;
+      }
+
+      markerRef.current?.remove();
+      markerRef.current = new mapboxgl.Marker({ color: "#d4773d" })
+        .setLngLat(coords)
+        .setPopup(
+          new mapboxgl.Popup({ offset: 20 }).setHTML(
+            `<strong>${trail.trip_name}</strong><br/>${trail.trip_location}`,
+          ),
+        )
+        .addTo(mapRef.current);
+      mapRef.current.easeTo({ center: coords, zoom: 6 });
+      mapRef.current.resize();
+    };
+
+    loadMarker().catch((err) => {
+      if (!cancelled) {
+        setLocationError(err?.message || "Unable to load map location.");
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [MAPBOX_TOKEN, trail, mapReady]);
+
+  const geocodeLocation = async (location) => {
+    if (!MAPBOX_TOKEN) return null;
+
+    const query = encodeURIComponent(location);
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${MAPBOX_TOKEN}&limit=1&country=us&types=region&autocomplete=false`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(
+        `Mapbox geocoding failed (${response.status}): ${body || "No details"}`,
+      );
+    }
+
+    const data = await response.json();
+    return data.features?.[0]?.center || null;
+  };
 
   const fetchTrailDetails = async () => {
     try {
@@ -142,6 +266,32 @@ export default function TrailDetails() {
               </div>
             </div>
           )}
+
+          <div className="trail-map-section">
+            <div className="map-header">
+              <h3>Trail Location</h3>
+              <p>Map marker is based on the trail's general state location.</p>
+            </div>
+            {!MAPBOX_TOKEN ? (
+              <p className="map-warning">Add a Mapbox token to view maps.</p>
+            ) : !trail.trip_location ? (
+              <p className="map-warning">
+                No location available for this trail.
+              </p>
+            ) : mapError ? (
+              <p className="map-warning">{mapError}</p>
+            ) : locationError ? (
+              <p className="map-warning">{locationError}</p>
+            ) : (
+              <div
+                ref={(node) => {
+                  mapContainerRef.current = node;
+                  setMapContainerReady(Boolean(node));
+                }}
+                className="trail-map"
+              />
+            )}
+          </div>
 
           <div className="trail-info">
             <div className="info-section">

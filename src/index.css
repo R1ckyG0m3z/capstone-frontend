@@ -148,6 +148,61 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* Map Section */
+.map-section {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: linear-gradient(to bottom, #f5e6d3 0%, #e8d5c4 100%);
+  border-radius: 12px;
+  border: 2px solid #c4a882;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.map-header {
+  margin-bottom: 1rem;
+  color: #4a3f35;
+}
+
+.map-header h3 {
+  font-size: 1.6rem;
+  margin-bottom: 0.25rem;
+}
+
+.map-warning {
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px dashed #c4a882;
+  background: #f5e6d3;
+  color: #8b4513;
+  text-align: center;
+  font-weight: 600;
+}
+
+.trails-map {
+  width: 100%;
+  height: 420px;
+  border-radius: 10px;
+  border: 2px solid #8b6f47;
+  overflow: hidden;
+}
+
+.trail-map-section {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: linear-gradient(to bottom, #f5e6d3 0%, #e8d5c4 100%);
+  border-radius: 12px;
+  border: 2px solid #c4a882;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.trail-map {
+  width: 100%;
+  height: 320px;
+  border-radius: 10px;
+  border: 2px solid #8b6f47;
+  overflow: hidden;
+}
+
 /* Trails Section */
 .trails-section h3 {
   font-size: 2rem;
@@ -223,6 +278,12 @@ body {
   margin-bottom: 1rem;
 }
 
+.trail-card-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
 .btn-join-trip {
   width: 100%;
   padding: 0.75rem;
@@ -247,6 +308,33 @@ body {
   border-color: #8b7a6a;
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.btn-map-view {
+  width: 100%;
+  padding: 0.65rem;
+  background-color: #f5e6d3;
+  color: #4a3f35;
+  border: 2px solid #8b6f47;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-map-view:hover {
+  background-color: #e8d5c4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-map-view:disabled {
+  background-color: #efe4d7;
+  border-color: #c4a882;
+  color: #8b7a6a;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 /* Form Section */
